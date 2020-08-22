@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <div id="chatTitle">Chat</div> <hr>
+    <div class="chat-box"></div>
+    <form id='send-form'>
+        <input autocomplete="off" type="text" id="message-box" name="message" placeholder="Enter your message:">
+        <button id="send-btn" type="submit">
+            <img src="sendimg.png" alt="send button" id="imgsendbtn"/>
+        </button>
+    </form>
+    <link rel="stylesheet" type="text/css" href="allstyles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src='client.js'></script>
+</body>
+</html>
