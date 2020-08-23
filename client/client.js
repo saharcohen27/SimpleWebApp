@@ -22,21 +22,38 @@ socket.on('checkAvRes', res => {
         socket.emit('loadChat');
     }
 });
-
+function getTime(){
+    var d = new Date();
+    var h = d.getHours().toLocaleString();
+    if (h.length == 1){
+        h = '0' + h;
+    }
+    var m = d.getMinutes().toLocaleString();
+    if (m.length == 1){
+        m = '0' + m;
+    }
+    return h + ":" + m;
+}
 function outputMessage(big_msg) {
     var user = big_msg.sender;
     var message = big_msg.msg;
     const div = document.createElement('div');
     if(user == 'ChatBot') {
         div.classList.add('systemMessage');
-        div.innerHTML =  message;
+        div.innerHTML = "<span class='time'>" + getTime() + " </span>" + message;
     }
     else if(user == username){
         div.classList.add('chatMessage');
-        div.innerHTML = "<span class='self-sender'>" + user + ": </span>" + message;
+        div.innerHTML =
+        "<span class='time'>" + getTime() + " </span>"+
+        "<span class='self-sender'>" + user + ": </span>" + 
+        message;
     }else {
         div.classList.add('chatMessage');
-        div.innerHTML = "<span class='sender-name'>" + user + ": </span>" + message;
+        div.innerHTML =
+        "<span class='time'>" + getTime() + " </span>"+
+        "<span class='sender-name'>" + user + ": </span>" + 
+        message;    
     }
     document.querySelector('.chat-box').appendChild(div);
     messages.scrollTop = messages.scrollHeight;
