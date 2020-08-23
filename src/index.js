@@ -13,6 +13,20 @@ const botName = "ChatBot"
 app.use(express.static(path.join(__dirname, '..', 'client')));
 var connected_users = []
 var all_messages = []
+var admins = ['Admin']
+
+function getTime(){
+  var d = new Date();
+  var h = d.getHours().toLocaleString();
+  if (h.length == 1){
+      h = '0' + h;
+  }
+  var m = d.getMinutes().toLocaleString();
+  if (m.length == 1){
+      m = '0' + m;
+  }
+  return h + ":" + m;
+}
 
 function isConnected(user) {
   for(i = 0; i < connected_users.length; i++) {
@@ -31,25 +45,29 @@ io.on('connection', (socket) => {
       socket.nickname = user;
       socket.emit('checkAvRes', 'ACCEPT')
       var welcomeMsg = socket.nickname + " Has Joined! 🤗"
-      socket.broadcast.emit('message', {msg: welcomeMsg, sender:botName})
-      socket.emit('message', {msg: 'Welcome! 🤗', sender:botName})
+      socket.broadcast.emit('message', {time:getTime(), msg: welcomeMsg, sender:botName})
     }
     else {
       socket.emit('checkAvRes', 'TAKEN')
     }
   });
+  socket.on('imIn', () => {
+    socket.emit('message', {msg: 'Welcome! 🤗', time:getTime(), sender:botName});
+  });
 
   socket.on('disconnect', () => {
     console.log('[-] Closed Connection');
     var byeMsg = socket.nickname + " Has Left... 😢"
-    if(socket.nickname){socket.broadcast.emit('message', {msg: byeMsg, sender:botName})}
+    var res = {time:getTime(), msg: byeMsg, sender:botName};
+    if(socket.nickname){socket.broadcast.emit('message', res)}
     connected_users.splice(connected_users.indexOf(socket), 1);
   });
 
   socket.on('chatMSG', big_msg => {
-    socket.emit('message', big_msg);
-    socket.broadcast.emit('message', big_msg);
-    all_messages.push(big_msg);
+    var res = {time:getTime(), sender:big_msg.sender, msg:big_msg.msg};
+    socket.emit('message', res);
+    socket.broadcast.emit('message', res);
+    all_messages.push(res);
   });
 
   socket.on('loadChat', () =>
