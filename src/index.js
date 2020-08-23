@@ -11,7 +11,8 @@ const io = socketio(server);
 const botName = "ChatBot"
 
 app.use(express.static(path.join(__dirname, '..', 'client')));
-var connected_users = ['Admin']
+var connected_users = []
+var all_messages = []
 
 function isConnected(user) {
   for(i = 0; i < connected_users.length; i++) {
@@ -21,6 +22,7 @@ function isConnected(user) {
   }
   return false;
 }
+
 io.on('connection', (socket) => {
   console.log('[+] New Connection');
   socket.on('checkAv', (user) => {
@@ -39,7 +41,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('[-] Closed Connection');
-    var byeMsg = socket.nickname + " Just Left... 😢"
+    var byeMsg = socket.nickname + " Has Left... 😢"
     if(socket.nickname){socket.broadcast.emit('message', {msg: byeMsg, sender:botName})}
     connected_users.splice(connected_users.indexOf(socket), 1);
   });
@@ -47,7 +49,16 @@ io.on('connection', (socket) => {
   socket.on('chatMSG', big_msg => {
     socket.emit('message', big_msg);
     socket.broadcast.emit('message', big_msg);
+    all_messages.push(big_msg);
   });
+
+  socket.on('loadChat', () =>
+  {
+    for(i=0;i<all_messages.length;i++){
+      socket.emit('message',all_messages[i]);
+    }
+  });
+
 });
   
 

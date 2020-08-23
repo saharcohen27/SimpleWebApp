@@ -9,7 +9,6 @@ function getUsername(){
     }
     return username;
 }
-
 var username = getUsername();
 socket.emit('checkAv', username);
 
@@ -19,19 +18,28 @@ socket.on('checkAvRes', res => {
         username = getUsername();
         socket.emit('checkAv', username);
     }
+    else {
+        socket.emit('loadChat');
+    }
 });
 
 function outputMessage(big_msg) {
     var user = big_msg.sender;
     var message = big_msg.msg;
     const div = document.createElement('div');
-    div.classList.add('chatMessage');
-    if(user == username){
+    if(user == 'ChatBot') {
+        div.classList.add('systemMessage');
+        div.innerHTML =  message;
+    }
+    else if(user == username){
+        div.classList.add('chatMessage');
         div.innerHTML = "<span class='self-sender'>" + user + ": </span>" + message;
     }else {
+        div.classList.add('chatMessage');
         div.innerHTML = "<span class='sender-name'>" + user + ": </span>" + message;
     }
     document.querySelector('.chat-box').appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
 }
 
 socket.on('message', big_msg => {
@@ -41,8 +49,7 @@ socket.on('message', big_msg => {
 chatForm.addEventListener('submit', event => {
     event.preventDefault();
     const msgg = event.target.elements.message.value;
-    socket.emit('chatMSG', {msg: msgg, sender:username} );
+    if (msgg){socket.emit('chatMSG', {msg: msgg, sender:username} );}
     event.target.elements.message.value = '';
     event.target.elements.message.focus();
-    messages.scrollTop = messages.scrollHeight;
 });
