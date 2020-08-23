@@ -51,6 +51,12 @@ io.on('connection', (socket) => {
       socket.emit('checkAvRes', 'TAKEN')
     }
   });
+
+  socket.on("reconnect", function() {
+    socket.broadcast.emit('message', {time:getTime(), msg: " Reconnected.. 😉", sender:botName});
+    socket.emit('message', {msg: 'Welcome Back! 🤔', time:getTime(), sender:botName});
+  });
+
   socket.on('imIn', () => {
     socket.emit('message', {msg: 'Welcome! 🤗', time:getTime(), sender:botName});
   });
